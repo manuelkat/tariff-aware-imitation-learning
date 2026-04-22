@@ -1,0 +1,290 @@
+# Full paper experiment suite for TAIL (Tariff-Aware Imitation Learning).
+# One config launches the complete experiment suite.
+
+pipeline: il
+results_dir: results
+seed: 1337
+
+suite:
+  enabled: true
+  suite_name: paper_default
+  timestamped_run_dir: true
+
+  scheduler:
+    strategy: hybrid
+    parallelize_across_buildings: true
+    parallelize_across_experiments: true
+    max_parallel_experiments: 2
+    prefer_serial_stages: [aggregate, figures]
+    prefer_parallel_stages: [teacher, train, eval]
+
+  stages:
+    run_teacher: true
+    run_train: true
+    run_eval: true
+    run_aggregate: true
+    run_figures: true
+
+  outputs:
+    write_config_snapshot: true
+    write_status_json: true
+    write_run_log: true
+    write_teacher_npz: true
+    write_teacher_csv: true
+    write_eval_rollout_npz: true
+    write_eval_timeseries_csv: true
+    write_episode_csv: true
+    write_cost_eval_episode_csv: true
+    write_dagger_round_csv: true
+    write_dagger_query_trace_csv: true
+    write_aggregate_csv: true
+    write_figures: true
+
+  experiments:
+    # NOTE: fs_p, fs_s, fs_t removed — they were redundant with fs_all_main
+    # because family_specific mode trains independent per-family models.
+    # fs_all_main covers all three families in one experiment.
+
+    - id: fs_all_main
+      enabled: true
+      training_mode: family_specific
+      active_tariff_families: [peak_shift, seasonal_window, tiered_tou]
+      target_families: [peak_shift, seasonal_window, tiered_tou]
+      forecast_variant: teacher_perfect
+      feature_set: tariff_aware_full
+      dagger_enabled: false
+
+    - id: fs_all_noisy05
+      enabled: true
+      training_mode: family_specific
+      active_tariff_families: [peak_shift, seasonal_window, tiered_tou]
+      target_families: [peak_shift, seasonal_window, tiered_tou]
+      forecast_variant: noisy_mpc_05
+      feature_set: tariff_aware_full
+      dagger_enabled: false
+
+    - id: fs_all_noisy10
+      enabled: true
+      training_mode: family_specific
+      active_tariff_families: [peak_shift, seasonal_window, tiered_tou]
+      target_families: [peak_shift, seasonal_window, tiered_tou]
+      forecast_variant: noisy_mpc_10
+      feature_set: tariff_aware_full
+      dagger_enabled: false
+
+    - id: fs_all_noisy20
+      enabled: true
+      training_mode: family_specific
+      active_tariff_families: [peak_shift, seasonal_window, tiered_tou]
+      target_families: [peak_shift, seasonal_window, tiered_tou]
+      forecast_variant: noisy_mpc_20
+      feature_set: tariff_aware_full
+      dagger_enabled: false
+
+    - id: fs_all_ablate_no_m2boundary
+      enabled: true
+      training_mode: family_specific
+      active_tariff_families: [peak_shift, seasonal_window, tiered_tou]
+      target_families: [peak_shift, seasonal_window, tiered_tou]
+      forecast_variant: teacher_perfect
+      feature_set: tariff_aware_no_m2boundary
+      dagger_enabled: false
+
+    - id: fs_all_ablate_no_peakflag
+      enabled: true
+      training_mode: family_specific
+      active_tariff_families: [peak_shift, seasonal_window, tiered_tou]
+      target_families: [peak_shift, seasonal_window, tiered_tou]
+      forecast_variant: teacher_perfect
+      feature_set: tariff_aware_no_peakflag
+      dagger_enabled: false
+
+    - id: fs_all_calendar_indexed
+      enabled: true
+      training_mode: family_specific
+      active_tariff_families: [peak_shift, seasonal_window, tiered_tou]
+      target_families: [peak_shift, seasonal_window, tiered_tou]
+      forecast_variant: teacher_perfect
+      feature_set: calendar_indexed
+      dagger_enabled: false
+
+    - id: fs_all_dagger
+      enabled: false
+      training_mode: family_specific
+      active_tariff_families: [peak_shift, seasonal_window, tiered_tou]
+      target_families: [peak_shift, seasonal_window, tiered_tou]
+      forecast_variant: teacher_perfect
+      feature_set: tariff_aware_full
+      dagger_enabled: true
+
+il:
+  data_root: data/processed/timeseries
+  timeseries_group: comstock_amy2018
+  building_manifest:
+    # 5 archetypes × 5 buildings = 25 (selected via metadata-first k-medoids)
+    # Warehouse
+    - {building_id: 73716,  timeseries_group: comstock_amy2018, archetype: warehouse}
+    - {building_id: 13462,  timeseries_group: comstock_amy2018, archetype: warehouse}
+    - {building_id: 128538, timeseries_group: comstock_amy2018, archetype: warehouse}
+    - {building_id: 2043,   timeseries_group: comstock_amy2018, archetype: warehouse}
+    - {building_id: 18743,  timeseries_group: comstock_amy2018, archetype: warehouse}
+    # Standalone Retail
+    - {building_id: 10189,  timeseries_group: comstock_amy2018, archetype: standalone_retail}
+    - {building_id: 50259,  timeseries_group: comstock_amy2018, archetype: standalone_retail}
+    - {building_id: 43065,  timeseries_group: comstock_amy2018, archetype: standalone_retail}
+    - {building_id: 24806,  timeseries_group: comstock_amy2018, archetype: standalone_retail}
+    - {building_id: 48625,  timeseries_group: comstock_amy2018, archetype: standalone_retail}
+    # Medium Office
+    - {building_id: 78117,  timeseries_group: comstock_amy2018, archetype: medium_office}
+    - {building_id: 16184,  timeseries_group: comstock_amy2018, archetype: medium_office}
+    - {building_id: 19468,  timeseries_group: comstock_amy2018, archetype: medium_office}
+    - {building_id: 19464,  timeseries_group: comstock_amy2018, archetype: medium_office}
+    - {building_id: 23124,  timeseries_group: comstock_amy2018, archetype: medium_office}
+    # Full-Service Restaurant
+    - {building_id: 113264, timeseries_group: comstock_amy2018, archetype: full_service_restaurant}
+    - {building_id: 78449,  timeseries_group: comstock_amy2018, archetype: full_service_restaurant}
+    - {building_id: 111459, timeseries_group: comstock_amy2018, archetype: full_service_restaurant}
+    - {building_id: 108068, timeseries_group: comstock_amy2018, archetype: full_service_restaurant}
+    - {building_id: 118820, timeseries_group: comstock_amy2018, archetype: full_service_restaurant}
+    # Primary School
+    - {building_id: 96486,  timeseries_group: comstock_amy2018, archetype: primary_school}
+    - {building_id: 124264, timeseries_group: comstock_amy2018, archetype: primary_school}
+    - {building_id: 113328, timeseries_group: comstock_amy2018, archetype: primary_school}
+    - {building_id: 87635,  timeseries_group: comstock_amy2018, archetype: primary_school}
+    - {building_id: 108723, timeseries_group: comstock_amy2018, archetype: primary_school}
+
+  max_building_workers: auto
+  parallel_workers: auto
+  max_steps: null
+
+  timezone: UTC
+  weekmask: MON_FRI
+
+  split_mode: seasonal
+  train_months: [1, 4, 6, 7, 10, 12]
+  val_months: [3, 9]
+  test_months: [2, 5, 8, 11]
+
+  allow_grid_export: false
+  initial_E_kwh: 150.0
+
+  make_figures: true
+  write_eval_timeseries_csv: true
+
+  battery:
+    auto_size: true
+    sizing_window_hours: 4.0
+    auto_initial_soc: true
+    freeze_derived_size_per_building: true
+    reuse_frozen_size_across_suite: true
+    E_max_kwh: 300.0
+    P_max_kw: 150.0
+    eta_charge: 0.95
+    eta_discharge: 0.95
+
+  teacher:
+    solver: GUROBI
+    allow_solver_fallback: true
+    fallback_solver_order: [OSQP, SCS]
+    horizon_steps: 672
+    lambda_batt_power: 1e-3
+
+  forecast_robustness:
+    enabled: true
+    variants:
+      teacher_perfect:
+        sigma_rel: 0.0
+        rho: 0.0
+      noisy_mpc_05:
+        sigma_rel: 0.05
+        rho: 0.8
+      noisy_mpc_10:
+        sigma_rel: 0.10
+        rho: 0.8
+      noisy_mpc_20:
+        sigma_rel: 0.20
+        rho: 0.8
+    save_forecast_traces: true
+
+  features:
+    active_feature_set: tariff_aware_full
+    sets:
+      tariff_aware_full:
+        include_tariff_price: true
+        include_peak_flag: true
+        include_minutes_to_boundary: true
+        include_calendar_index: false
+      tariff_aware_no_m2boundary:
+        include_tariff_price: true
+        include_peak_flag: true
+        include_minutes_to_boundary: false
+        include_calendar_index: false
+      tariff_aware_no_peakflag:
+        include_tariff_price: true
+        include_peak_flag: false
+        include_minutes_to_boundary: true
+        include_calendar_index: false
+      calendar_indexed:
+        include_tariff_price: false
+        include_peak_flag: false
+        include_minutes_to_boundary: false
+        include_calendar_index: true
+
+  bc:
+    epochs: 200
+    batch_size: 256
+    lr: 3e-4
+    weight_decay: 1e-4
+    early_stopping_patience: 0
+    early_stopping_min_delta: 1e-4
+    cost_eval_every: 10
+    cost_patience_evals: 0
+    device: cpu
+    save_all_cost_eval_checkpoints: true
+    save_cost_eval_episode_csv: true
+    restore_best_checkpoint_by: bill_cost
+
+  dagger:
+    enabled: false
+    rounds: 3
+    beta: 0.5
+    label_stride: 1
+    retrain_from_scratch: false
+    batch_mix_expert_vs_agg: 0.5
+    drop_failed_teacher_queries: true
+    save_round_rollouts: true
+    save_teacher_query_trace: true
+
+  experiment:
+    training_mode: family_specific
+    family_label_scheme: pst
+    active_tariff_families: [peak_shift, seasonal_window, tiered_tou]
+
+  tariffs:
+    families:
+      peak_shift:
+        variants:
+          train: [1, 2]
+          held_out: [3, 4]
+        flat_confound_variant: 3
+      seasonal_window:
+        variants:
+          train: [1, 2]
+          held_out: [3, 4]
+      tiered_tou:
+        variants:
+          train: [1, 2]
+          held_out: [3, 4]
+
+  training:
+    family_specific:
+      target_families: [peak_shift, seasonal_window, tiered_tou]
+
+# Semantics:
+# - The suite section is the default paper orchestrator.
+# - If active_tariff_families lists all three families, it is a full run.
+# - If it lists one or two families, only that subset is executed.
+# - Battery sizing is derived once per building and reused across all suite experiments.
+# - Forecast robustness covers teacher_perfect, noisy_mpc_05, noisy_mpc_10, noisy_mpc_20.
+# - Feature ablations are part of the main family_specific suite.
+# - DAgger here is always full-state labeling; there is no budgeted mode in the paper plan.

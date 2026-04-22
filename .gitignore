@@ -1,0 +1,40 @@
+# Publication-facing ignore rules
+
+# Virtual environments and Python caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local editor and OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.VSCodeCounter
+.DS_Store
+
+# Logs and local run state
+*.log
+cache/
+.archive/
+
+# Generated or sensitive research assets
+data/
+results/
+figures/
+tests/
+scripts/
+
+# Manuscripts, review notes, and internal planning
+*.md
+!README.md
+*.tex
+*.pdf
+
+# Non-public configs; keep only the main released experiment config
+configs/*.yaml
+!configs/il_tariff_families.yaml

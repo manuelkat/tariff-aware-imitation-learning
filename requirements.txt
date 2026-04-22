@@ -1,0 +1,6 @@
+cvxpy>=1.4
+matplotlib>=3.9
+numpy>=1.26
+pandas>=2.2
+PyYAML>=6.0
+torch>=2.3
