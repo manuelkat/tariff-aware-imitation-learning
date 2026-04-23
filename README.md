@@ -97,4 +97,19 @@ The feature design follows the paper: load context, battery state, current runni
 
 ## Citation
 
-If you use this code, please cite the paper *Tariff-Aware Imitation Learning for Transferable Battery Storage Control*. Bibliographic metadata will be added once publication details are available.
+If you use this code, please cite the paper *Tariff-Aware Imitation Learning for Transferable Battery Storage Control*:
+
+> Manuel Katholnigg, Sheng Yin, Elgin Kollnig, and Christoph Goebel. 2026. Tariff-Aware Imitation Learning for Transferable Battery Storage Control. In The 17th ACM International Conference on Future and Sustainable Energy Systems (E-Energy '26), June 22--25, 2026, Banff, AB, Canada. https://doi.org/10.1145/3744255.3811715
+
+**BibTeX:**
+
+```bibtex
+@inproceedings{katholnigg2026tariff,
+  title={Tariff-Aware Imitation Learning for Transferable Battery Storage Control},
+  author={Katholnigg, Manuel and Yin, Sheng and Kollnig, Elgin and Goebel, Christoph},
+  booktitle={The 17th ACM International Conference on Future and Sustainable Energy Systems (E-Energy '26)},
+  year={2026},
+  location={Banff, AB, Canada},
+  doi={10.1145/3744255.3811715},
+  isbn={979-8-4007-2011-6}
+}
